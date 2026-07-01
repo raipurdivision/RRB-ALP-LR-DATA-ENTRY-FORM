@@ -1,0 +1,967 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crew LR Data Form - South East Central Railway</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      background:linear-gradient(135deg,#b1d5e6 0%,#87ceeb 100%);
+      font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+      padding:16px; min-height:100vh;
+    }
+    .container{
+      max-width:1100px; margin:0 auto;
+      background:rgb(138,201,241);
+      border-radius:15px;
+      box-shadow:0 10px 40px rgba(0,0,0,0.2);
+      overflow:hidden;
+    }
+    .header{
+      background:linear-gradient(135deg,#1a237e 0%,#283593 100%);
+      color:#fff; border-bottom:4px solid #FFD700;
+      padding:12px 18px;
+    }
+    .header-inner{display:flex;align-items:center;gap:14px;}
+    .header-text{text-align:center;flex:1;}
+    .header-text .hindi{font-size:1.4em;font-weight:bold;letter-spacing:1px;text-shadow:1px 1px 3px rgba(0,0,0,.3);}
+    .header-text .sub{font-size:0.82em;color:#FFD700;font-weight:bold;letter-spacing:1px;margin-top:3px;text-transform:uppercase;}
+    .header-text .sub2{font-size:0.75em;color:#FFD700;opacity:.85;letter-spacing:.5px;}
+    .form-container{padding:18px;background:#e4e7e7;}
+    .section{
+      background:rgb(212,220,218);padding:15px;margin-bottom:16px;
+      border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,.1);
+    }
+    .section-title{
+      font-size:0.95em;font-weight:bold;
+      background:linear-gradient(135deg,#1a237e,#3949ab);
+      color:#fff;padding:7px 12px;border-radius:5px;
+      letter-spacing:1px;margin-bottom:14px;text-transform:uppercase;text-align:center;
+    }
+    .fields-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 20px;}
+    .fields-grid.cols-3{grid-template-columns:repeat(3,1fr);}
+    .field-pair{display:grid;grid-template-columns:140px 1fr;align-items:center;gap:0 10px;}
+    .field-pair label{font-size:12px;font-weight:bold;color:#1a237e;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;}
+    input[type="text"],input[type="date"],input[type="time"],input[type="number"],select,textarea{
+      width:100%;padding:7px 9px;border:2px solid #b3d9ff;border-radius:5px;
+      font-size:12px;font-weight:bold;background:#fff;
+      transition:border-color .3s,box-shadow .3s;color:#1a237e;height:34px;
+    }
+    textarea{height:auto;}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:#4a90e2;box-shadow:0 0 8px rgba(74,144,226,.3);}
+    input[type="text"]{text-transform:uppercase;}
+    #entriesWrap{display:flex;flex-direction:column;gap:14px;}
+    .entry-card{background:#fff;border:2px solid #b3d9ff;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,.08);overflow:hidden;}
+    .entry-card-head{
+      background:linear-gradient(135deg,#1a237e 0%,#4a8ec2 100%);color:#fff;
+      padding:7px 12px;display:flex;align-items:center;justify-content:space-between;
+    }
+    .entry-card-head .entry-num{font-size:12px;font-weight:bold;letter-spacing:.5px;text-transform:uppercase;}
+    .entry-card-body{padding:14px;background:#f0f8ff;}
+    .entry-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 20px;}
+    .entry-field{display:grid;grid-template-columns:110px 1fr;align-items:center;gap:0 10px;}
+    .entry-field label{font-size:11px;font-weight:bold;color:#1a237e;text-transform:uppercase;letter-spacing:.3px;}
+    .entry-field.full{grid-column:1/-1;grid-template-columns:110px 1fr;align-items:start;}
+    .entry-field.full label{padding-top:7px;}
+    .entry-field textarea{resize:vertical;min-height:42px;height:auto;}
+    .stn-row{grid-column:1/-1;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+    .stn-field{display:flex;flex-direction:column;gap:4px;}
+    .stn-field label{font-size:10px;font-weight:bold;color:#1a237e;text-transform:uppercase;letter-spacing:.3px;text-align:center;}
+    .stn-field input{height:32px;text-align:center;padding:6px 4px;}
+    .stn-field select{height:32px;text-align:center;padding:4px;text-align-last:center;}
+    .btn-row{display:flex;gap:10px;margin-top:14px;justify-content:center;flex-wrap:wrap;}
+    .btn{padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:bold;transition:all .3s;text-transform:uppercase;letter-spacing:.5px;}
+    .btn-green{background:linear-gradient(135deg,#27ae60,#229954);color:#fff;}
+    .btn-green:hover{background:linear-gradient(135deg,#229954,#1e8449);transform:translateY(-1px);}
+    .btn-green:disabled{background:#aaa;cursor:not-allowed;transform:none;}
+    .btn-blue{background:linear-gradient(135deg,#1a237e,#3949ab);color:#fff;}
+    .btn-blue:hover{background:linear-gradient(135deg,#283593,#1a237e);transform:translateY(-1px);}
+    .btn-blue:disabled{background:#aaa;cursor:not-allowed;transform:none;}
+    .btn-red{background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;}
+    .btn-red:hover{background:linear-gradient(135deg,#a93226,#c0392b);transform:translateY(-1px);}
+    .btn-grey{background:linear-gradient(135deg,#616161,#757575);color:#fff;}
+    .btn-grey:hover{background:linear-gradient(135deg,#4d4d4d,#616161);transform:translateY(-1px);}
+    .delete-btn{background:#e74c3c;color:#fff;border:none;border-radius:4px;padding:4px 10px;cursor:pointer;font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.3px;}
+    .delete-btn:hover{background:#c0392b;}
+    #toast{
+      display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
+      padding:12px 28px;border-radius:8px;font-size:14px;font-weight:bold;
+      color:#fff;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);
+      animation:fadeIn .3s ease;
+    }
+    #toast.success{background:#27ae60;}
+    #toast.error{background:#e74c3c;}
+    #toast.info{background:#1a237e;}
+    @keyframes fadeIn{from{opacity:0;bottom:15px;}to{opacity:1;bottom:30px;}}
+    input[type="text"][readonly]{
+      background:linear-gradient(135deg,#e8f5e9,#f1f8e9);
+      color:#1a237e;
+      cursor:not-allowed;
+      border-color:#66bb6a;
+      font-style:italic;
+    }
+    @media (max-width:700px){
+      .fields-grid,.fields-grid.cols-3{grid-template-columns:1fr;}
+      .field-pair{grid-template-columns:110px 1fr;}
+      .entry-grid{grid-template-columns:1fr;}
+      .entry-field,.entry-field.full{grid-template-columns:100px 1fr;}
+      .stn-row{grid-template-columns:repeat(2,1fr);}
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-inner">
+      <div class="header-text">
+        <div class="hindi">CREW LR DATA FORM</div>
+        <div class="sub">South East Central Railway</div>
+        <div class="sub2">Raipur Division</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-container">
+
+    <!-- Crew Details -->
+    <div class="section">
+      <div class="section-title">Crew Details</div>
+      <div class="fields-grid cols-3">
+        <div class="field-pair">
+          <label>Date</label>
+          <input type="date" id="crewDate">
+        </div>
+        <div class="field-pair">
+          <label>Crew Name</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="text" id="crewName" list="crewNameList" placeholder="Type to search or enter manually" autocomplete="off" style="flex:1;">
+            <button type="button" class="btn btn-blue" onclick="loadCrewList()" title="Refresh crew list from Google Sheet" style="padding:5px 9px;white-space:nowrap;font-size:11px;height:34px;">&#x1F504;</button>
+          </div>
+          <datalist id="crewNameList"></datalist>
+        </div>
+        <div class="field-pair">
+          <label>HQ</label>
+          <input type="text" id="hq">
+        </div>
+        <div class="field-pair">
+          <label>Designation</label>
+          <input type="text" id="designation">
+        </div>
+        <div class="field-pair">
+          <label>CMS ID</label>
+          <input type="text" id="cmsId" list="cmsIdList" placeholder="Type to search or enter manually" autocomplete="off">
+          <datalist id="cmsIdList"></datalist>
+        </div>
+        <div class="field-pair">
+          <label>Group CLI</label>
+          <input type="text" id="groupCli" list="groupCliList" placeholder="Type to search or enter manually" autocomplete="off">
+          <datalist id="groupCliList">
+            <option value="A K REDDY/CLI/R">
+            <option value="A.R. TARAM/CLI/BIA">
+            <option value="ABDUL MOIN KHAN/CLI/BIA">
+            <option value="AKHILESH KUMAR/CLI/BIA">
+            <option value="AMIT KUMAR BANKURE/CLI/BYT">
+            <option value="ANANT PRAKASH SHRIVASTAVA/CLI/BIA">
+            <option value="ANIL KUMAR/CLI/BIA">
+            <option value="ANKIT RAM KANT/CLI/BIA">
+            <option value="ASHISH WANJARI/CLI/BYT">
+            <option value="AVON KUMAR SAHU/CLI/R">
+            <option value="B B KUSHWAHA/CLI/BIA">
+            <option value="B K HARMUKH/CLI/BIA">
+            <option value="B. K. SAHA/CLI/BIA">
+            <option value="B.K.SONI/CLI/BIA">
+            <option value="BHARAT SINGH ATBHAIYYA/CLI/R">
+            <option value="BHOLI CHAUDHARY/CLI/R">
+            <option value="BIKRAMJIT KANRAR/CLI/BIA">
+            <option value="BINOD KUMAR RAM/CLI/R">
+            <option value="DEEPANNITA PUNTAMBEKAR/CLI/BIA">
+            <option value="DILLI RAO/CLI/BYT">
+            <option value="G. C. BISWAS/CLI/R">
+            <option value="G. V. R. K. MADHU/CLI/BIA">
+            <option value="GIRDHARI LAL/CLI/R">
+            <option value="JAISHANKAR SHARMA/CLI/BIA">
+            <option value="JITENDRA KUMAR MISHRA/CLI/BYT">
+            <option value="K P HIRWANI/CLI/BYT">
+            <option value="K P LAHRE/CLI/BIA">
+            <option value="K. K. SAHU/CLI/BIA">
+            <option value="KAMLESH KUMAR RAJABHOJ/CLI/BIA">
+            <option value="KHUSHAL SINGH/CLI/DRZ">
+            <option value="MAHESHWAR/CLI/BIA">
+            <option value="MANOJ KUMAR SAO/CLI/R">
+            <option value="MANSUKH LAL CHANDRAKAR/CLI/R">
+            <option value="MOHIT KUMAR SWARNKAR/CLI/BIA">
+            <option value="N. R. KARPAL/CLI/BIA">
+            <option value="N.K. BHOI/CLI/R">
+            <option value="NIRMAL KUMAR/CLI/BYT">
+            <option value="NITIN KUKDE/CLI/BYT">
+            <option value="P.K. PATEL/CLI/BIA">
+            <option value="PALAK RAM ALENDRA/CLI/DRZ">
+            <option value="PANKAJ KUMAR SINGH/CLI/BIA">
+            <option value="PAWAN KUMAR SINGH/CLI/BIA">
+            <option value="PURAN LAL PATEL/CLI/BYT">
+            <option value="RAJENDRA KUMAR/CLI/BIA">
+            <option value="RAJESH KUMAR DESHMUKH/CLI/R">
+            <option value="RAJNEESH BENERJEE/CLI/BIA">
+            <option value="RAKESH KUMAR KOSTA/CLI/DRZ">
+            <option value="RANJEET SINGH/CLI/BYT">
+            <option value="S K GAUTAM/CLI/BIA">
+            <option value="S S HUSSAIN/CLI/BIA">
+            <option value="S. C. RAI/CLI/BIA">
+            <option value="S. K. SINGH/CLI/BIA">
+            <option value="S. L. SONI/CLI/R">
+            <option value="SANAT KUMAR SAHU/CLI/DRZ">
+            <option value="SANJAY KUMAR ROY/CLI/BIA">
+            <option value="SANJAY SINGH/CLI/DRZ">
+            <option value="SANJEEV KUMAR SHARMA/CLI/BIA">
+            <option value="SANTOSH KUAMAR PATKAR/CLI/BIA">
+            <option value="SATYENDRA KUMAR/CLI/DRZ">
+            <option value="SHAILENDRA SINGH/CLI/BIA">
+            <option value="SUNDEEP KUMAR SHARMA/CLI/BIA">
+            <option value="SUNIL KUMAR DEWANGAN/CLI/BIA">
+            <option value="SURENDRA KUMAR SONI/CLI/BYT">
+            <option value="V.K. BHAGAT/CLI/R">
+            <option value="VIJAY KUMAR ARYA/CLI/BIA">
+            <option value="VIKAS SHENDE/CLI/R">
+            <option value="VINAY KUMAR VINCHURE/CLI/BIA">
+            <option value="VINAY PANTAWANE/CLI/BIA">
+            <option value="Y. RAMU/CLI/BIA">
+            <option value="YOGESH KUMAR MIHAULIA/CLI/BIA">
+          </datalist>
+        </div>
+      </div>
+    </div>
+
+    <!-- LR Details -->
+    <div class="section">
+      <div class="section-title">LR Details</div>
+      <div id="entriesWrap"></div>
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn btn-blue" onclick="addRow()">＋ Add Entry</button>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="btn-row">
+      <button class="btn btn-green" id="submitBtn" onclick="handleSubmit()">✔ Submit to Google Sheet</button>
+      <button class="btn btn-red" id="pdfBtn" onclick="generatePDF()">⬇ Generate PDF</button>
+      <button class="btn btn-grey" id="clearBtn" onclick="clearForm()">✕ Clear Form</button>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  // ── Google Apps Script Web App URL ──
+  // Replace with your deployed Apps Script /exec URL
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwY5UqahR2epqWmzcOtdPXE-BjJ-NwUfSbJuQozbXubTvL0ziWCBQHhYQszfVM8zpD8cA/exec';
+
+  // ── Crew List source: Google Sheet "LR CREW LIST" ──
+  const CREW_SHEET_ID   = '1EaTu-GupuM_nM4K1sHe2q2l_QVjdUjxHqgpXjiiu_ag';
+  const CREW_SHEET_NAME = 'Sheet1';
+  const CREW_CSV_URL    = `https://docs.google.com/spreadsheets/d/${CREW_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(CREW_SHEET_NAME)}`;
+
+  // CORS proxy fallbacks — tried in order until one works
+  const CREW_CORS_PROXIES = [
+    url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    url => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+    url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  ];
+
+  let crewData = {};     // NAME -> { hq, designation, cmsId }
+  let crewByCmsId = {};  // CMS ID -> { name, hq, designation }
+
+  function parseCrewCSV(text) {
+    const rows = [];
+    const lines = text.split(/\r?\n/);
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      const row = [];
+      let cur = '', inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') { inQ = !inQ; }
+        else if (ch === ',' && !inQ) { row.push(cur.trim()); cur = ''; }
+        else { cur += ch; }
+      }
+      row.push(cur.trim());
+      rows.push(row);
+    }
+    return rows;
+  }
+
+  function populateCrewDatalist(rows) {
+    if (rows.length < 2) throw new Error('Sheet has no data rows');
+
+    const headers = rows[0].map(h => String(h).trim().toUpperCase());
+    const nameIdx  = headers.findIndex(h => h.includes('NAME'));
+    const hqIdx    = headers.findIndex(h => h === 'HQ' || h.includes('H.Q') || h.includes('HEAD'));
+    const desigIdx = headers.findIndex(h => h.includes('DESIG'));
+    const cmsIdx   = headers.findIndex(h => h.includes('CMS'));
+
+    if (nameIdx < 0) throw new Error('NAME column not found in sheet. Check headers.');
+
+    crewData = {};
+    crewByCmsId = {};
+    const dl = document.getElementById('crewNameList');
+    dl.innerHTML = '';
+    const cmsDl = document.getElementById('cmsIdList');
+    cmsDl.innerHTML = '';
+
+    const temp = [];
+    for (let i = 1; i < rows.length; i++) {
+      const row  = rows[i];
+      const name = String(row[nameIdx] || '').trim().toUpperCase();
+      if (!name) continue;
+      temp.push({
+        name,
+        hq:          hqIdx    >= 0 ? String(row[hqIdx]    || '').trim() : '',
+        designation: desigIdx >= 0 ? String(row[desigIdx] || '').trim() : '',
+        cmsId:       cmsIdx   >= 0 ? String(row[cmsIdx]   || '').trim() : '',
+      });
+    }
+    temp.sort((a, b) => a.name.localeCompare(b.name));
+
+    temp.forEach(c => {
+      crewData[c.name] = { hq: c.hq, designation: c.designation, cmsId: c.cmsId };
+      const opt = document.createElement('option');
+      opt.value = c.name;
+      dl.appendChild(opt);
+
+      if (c.cmsId) {
+        crewByCmsId[c.cmsId.toUpperCase()] = { name: c.name, hq: c.hq, designation: c.designation };
+        const cmsOpt = document.createElement('option');
+        cmsOpt.value = c.cmsId;
+        cmsDl.appendChild(cmsOpt);
+      }
+    });
+
+    return temp.length;
+  }
+
+  function populateCrewDatalistFromRecords(records) {
+    if (!Array.isArray(records) || records.length === 0) throw new Error('No crew records returned');
+
+    crewData = {};
+    crewByCmsId = {};
+    const dl = document.getElementById('crewNameList');
+    dl.innerHTML = '';
+    const cmsDl = document.getElementById('cmsIdList');
+    cmsDl.innerHTML = '';
+
+    const temp = records
+      .map(r => ({
+        name: String(r.name || '').trim().toUpperCase(),
+        hq: String(r.hq || '').trim(),
+        designation: String(r.designation || '').trim(),
+        cmsId: String(r.cmsId || '').trim(),
+      }))
+      .filter(r => r.name);
+
+    temp.sort((a, b) => a.name.localeCompare(b.name));
+
+    temp.forEach(c => {
+      crewData[c.name] = { hq: c.hq, designation: c.designation, cmsId: c.cmsId };
+      const opt = document.createElement('option');
+      opt.value = c.name;
+      dl.appendChild(opt);
+
+      if (c.cmsId) {
+        crewByCmsId[c.cmsId.toUpperCase()] = { name: c.name, hq: c.hq, designation: c.designation };
+        const cmsOpt = document.createElement('option');
+        cmsOpt.value = c.cmsId;
+        cmsDl.appendChild(cmsOpt);
+      }
+    });
+
+    return temp.length;
+  }
+
+  // Load crew list via JSONP through the Apps Script Web App (bypasses CORS entirely,
+  // no dependency on third-party proxy services).
+  function loadCrewListViaJSONP() {
+    return new Promise((resolve, reject) => {
+      if (!SHEET_URL || SHEET_URL.includes('PASTE_YOUR')) {
+        reject(new Error('SHEET_URL not configured'));
+        return;
+      }
+      const callbackName = 'crewListCB_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+      const script = document.createElement('script');
+      let done = false;
+
+      function cleanup() {
+        delete window[callbackName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      window[callbackName] = function (data) {
+        done = true;
+        cleanup();
+        if (data && data.error) reject(new Error(data.error));
+        else resolve(data);
+      };
+
+      script.onerror = function () {
+        if (!done) { cleanup(); reject(new Error('JSONP script failed to load')); }
+      };
+
+      script.src = `${SHEET_URL}?action=crewlist&callback=${callbackName}`;
+      document.body.appendChild(script);
+
+      setTimeout(() => {
+        if (!done) { cleanup(); reject(new Error('JSONP timeout')); }
+      }, 10000);
+    });
+  }
+
+  async function loadCrewList() {
+    // Strategy 1: Apps Script JSONP — most reliable, no CORS or 3rd-party proxy dependency
+    try {
+      const records = await loadCrewListViaJSONP();
+      const count = populateCrewDatalistFromRecords(records);
+      showToast(`✅ ${count} crew loaded via Apps Script!`, 'success');
+      return;
+    } catch (err) {
+      console.warn('Apps Script JSONP strategy failed:', err.message);
+    }
+
+    // Strategy 2-5: direct CSV fetch + proxy fallbacks (may be blocked by CORS or rate limits)
+    const strategies = [
+      async () => {
+        const res = await fetch(CREW_CSV_URL, { signal: AbortSignal.timeout(8000) });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const csv = await res.text();
+        return { count: populateCrewDatalist(parseCrewCSV(csv)), label: 'Google Sheets (direct)' };
+      },
+      async () => {
+        const url = CREW_CORS_PROXIES[0](CREW_CSV_URL);
+        const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+        if (!res.ok) throw new Error('Proxy HTTP ' + res.status);
+        const csv = await res.text();
+        return { count: populateCrewDatalist(parseCrewCSV(csv)), label: 'allorigins proxy' };
+      },
+      async () => {
+        const url = CREW_CORS_PROXIES[1](CREW_CSV_URL);
+        const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+        if (!res.ok) throw new Error('Proxy2 HTTP ' + res.status);
+        const csv = await res.text();
+        return { count: populateCrewDatalist(parseCrewCSV(csv)), label: 'corsproxy.io' };
+      },
+      async () => {
+        const url = CREW_CORS_PROXIES[2](CREW_CSV_URL);
+        const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+        if (!res.ok) throw new Error('Proxy3 HTTP ' + res.status);
+        const csv = await res.text();
+        return { count: populateCrewDatalist(parseCrewCSV(csv)), label: 'codetabs proxy' };
+      },
+    ];
+
+    for (let i = 0; i < strategies.length; i++) {
+      try {
+        const { count, label } = await strategies[i]();
+        showToast(`✅ ${count} crew loaded via ${label}!`, 'success');
+        return;
+      } catch (err) {
+        console.warn(`Crew list strategy ${i + 1} failed:`, err.message);
+      }
+    }
+    showToast('❌ Could not load crew list. Check sheet sharing settings.', 'error');
+  }
+
+  function autoFillCrew(name) {
+    const hqEl    = document.getElementById('hq');
+    const desigEl = document.getElementById('designation');
+    const cmsEl   = document.getElementById('cmsId');
+    const data    = crewData[String(name || '').trim().toUpperCase()];
+
+    if (data) {
+      hqEl.value    = data.hq;
+      desigEl.value = data.designation;
+      cmsEl.value   = data.cmsId;
+      [hqEl, desigEl, cmsEl].forEach(el => {
+        if (el.value) { el.setAttribute('readonly', true); el.title = 'Auto-filled from Google Sheet'; }
+        else { el.removeAttribute('readonly'); el.title = ''; }
+      });
+      showToast('✅ Auto-filled: ' + name, 'success');
+    } else {
+      // Manually typed name — unlock fields for manual entry
+      [hqEl, desigEl, cmsEl].forEach(el => { el.removeAttribute('readonly'); el.title = ''; });
+    }
+  }
+
+  // Reverse lookup: typing/selecting a CMS ID fills Crew Name, HQ and Designation.
+  function autoFillByCmsId(cmsId) {
+    const nameEl  = document.getElementById('crewName');
+    const hqEl    = document.getElementById('hq');
+    const desigEl = document.getElementById('designation');
+    const data    = crewByCmsId[String(cmsId || '').trim().toUpperCase()];
+
+    if (data) {
+      nameEl.value  = data.name;
+      hqEl.value    = data.hq;
+      desigEl.value = data.designation;
+      [hqEl, desigEl].forEach(el => {
+        if (el.value) { el.setAttribute('readonly', true); el.title = 'Auto-filled from Google Sheet'; }
+        else { el.removeAttribute('readonly'); el.title = ''; }
+      });
+      showToast('✅ Auto-filled: ' + data.name, 'success');
+    } else {
+      // Manually typed / unmatched CMS ID — unlock HQ & Designation for manual entry
+      [hqEl, desigEl].forEach(el => { el.removeAttribute('readonly'); el.title = ''; });
+    }
+  }
+
+  // Listen on both 'input' (typing / most desktop browsers picking a datalist option)
+  // and 'change' (fires reliably on mobile browsers when a datalist suggestion is tapped)
+  // so Designation, HQ and CMS ID auto-fill no matter how the name or ID was selected.
+  const crewNameEl = document.getElementById('crewName');
+  crewNameEl.addEventListener('input',  (e) => autoFillCrew(e.target.value));
+  crewNameEl.addEventListener('change', (e) => autoFillCrew(e.target.value));
+
+  const cmsIdEl = document.getElementById('cmsId');
+  cmsIdEl.addEventListener('input',  (e) => autoFillByCmsId(e.target.value));
+  cmsIdEl.addEventListener('change', (e) => autoFillByCmsId(e.target.value));
+
+  document.addEventListener('DOMContentLoaded', loadCrewList);
+
+  let rowCount = 0;
+
+  function addRow() {
+    rowCount++;
+    const wrap = document.getElementById('entriesWrap');
+    const card = document.createElement('div');
+    card.className = 'entry-card';
+    card.setAttribute('data-entry', rowCount);
+    card.innerHTML = `
+      <div class="entry-card-head">
+        <span class="entry-num">Entry ${rowCount}</span>
+        <button class="delete-btn" onclick="this.closest('.entry-card').remove()">✕ Remove</button>
+      </div>
+      <div class="entry-card-body">
+        <div class="entry-grid">
+          <div class="entry-field"><label>Name of Working LP/HQ</label><input type="text" name="lpNameHq"></div>
+          <div class="entry-field"><label>Train No.</label><input type="text" name="trainNo"></div>
+          <div class="entry-field"><label>Loco No.</label><input type="text" name="locoNo"></div>
+          <div class="stn-row">
+            <div class="stn-field"><label>From Stn.</label><input type="text" name="fromStation"></div>
+            <div class="stn-field"><label>Dep.</label><input type="text" name="depTime"></div>
+            <div class="stn-field"><label>To Stn.</label><input type="text" name="toStation"></div>
+            <div class="stn-field"><label>Arrival</label><input type="text" name="arrTime"></div>
+            <div class="stn-field"><label>Line</label>
+              <select name="line">
+                <option value="">--</option>
+                <option value="UP">UP</option>
+                <option value="UP MIDDLE">UP MIDDLE</option>
+                <option value="DN">DN</option>
+                <option value="DN MIDDLE">DN MIDDLE</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    wrap.appendChild(card);
+
+    // Auto-fill Working LP Name/HQ, Train No, Loco No from the previous entry (still editable)
+    const allCards = wrap.querySelectorAll('.entry-card');
+    if (allCards.length > 1) {
+      const prevCard = allCards[allCards.length - 2];
+      ['lpNameHq', 'trainNo', 'locoNo'].forEach(fieldName => {
+        const prevInput = prevCard.querySelector(`[name="${fieldName}"]`);
+        const newInput  = card.querySelector(`[name="${fieldName}"]`);
+        if (prevInput && newInput) newInput.value = prevInput.value;
+      });
+    }
+  }
+
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = type;
+    t.style.display = 'block';
+    setTimeout(() => { t.style.display = 'none'; }, 4000);
+  }
+
+  function formatDateDDMMYYYY(isoDate) {
+    if (!isoDate) return '';
+    const parts = isoDate.split('-');
+    if (parts.length !== 3) return isoDate;
+    const [y, m, d] = parts;
+    return `${d}/${m}/${y}`;
+  }
+
+  function collectData() {
+    const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+    const header = {
+      timestamp,
+      crewDate:    formatDateDDMMYYYY(document.getElementById('crewDate').value),
+      crewName:    document.getElementById('crewName').value,
+      hq:          document.getElementById('hq').value,
+      designation: document.getElementById('designation').value,
+      groupCli:    document.getElementById('groupCli').value,
+      cmsId:       document.getElementById('cmsId').value,
+    };
+    const entries = [];
+    document.querySelectorAll('.entry-card').forEach((card, i) => {
+      const get = name => { const el = card.querySelector(`[name="${name}"]`); return el ? el.value : ''; };
+      entries.push({
+        entryNo:     i + 1,
+        lpNameHq:    get('lpNameHq'),
+        trainNo:     get('trainNo'),
+        locoNo:      get('locoNo'),
+        fromStation: get('fromStation'),
+        depTime:     get('depTime'),
+        toStation:   get('toStation'),
+        arrTime:     get('arrTime'),
+        line:        get('line'),
+      });
+    });
+    return { header, entries };
+  }
+
+  let isSubmitted = false;
+
+  async function handleSubmit() {
+    if (isSubmitted) {
+      alert('⚠️ DATA ALREADY SUBMITTED');
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Submitting...';
+
+    const payload = collectData();
+
+    try {
+      await fetch(SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      // no-cors returns opaque response, assume success if no network error
+      isSubmitted = true;
+      btn.textContent = '✅ Submitted';
+      btn.style.background = 'linear-gradient(135deg,#7f8c8d,#95a5a6)';
+      btn.title = 'Data already submitted';
+      showToast('✅ Data submitted to Google Sheet!', 'success');
+    } catch (err) {
+      showToast('❌ Failed to connect. Check the Web App URL.', 'error');
+      btn.disabled = false;
+      btn.textContent = '✔ Submit to Google Sheet';
+    }
+  }
+
+  function generatePDF() {
+    const btn = document.getElementById('pdfBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Generating...';
+
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      const pageW = doc.internal.pageSize.getWidth();
+      const margin = 10;
+
+      // ── Header ──
+      doc.setFillColor(26, 35, 126);
+      doc.rect(0, 0, pageW, 22, 'F');
+      doc.setFontSize(14);
+      doc.setTextColor(255, 215, 0);
+      doc.setFont('helvetica', 'bold');
+      doc.text('SOUTH EAST CENTRAL RAILWAY — RAIPUR DIVISION', pageW / 2, 8, { align: 'center' });
+      doc.setFontSize(10);
+      doc.text('CREW LR DATA FORM', pageW / 2, 15, { align: 'center' });
+
+      const ts = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+      doc.setFontSize(7);
+      doc.setTextColor(255, 215, 0);
+      doc.text('Generated: ' + ts, pageW - margin, 20, { align: 'right' });
+
+      let y = 28;
+
+      // ── Crew Details ──
+      const { header: td, entries } = collectData();
+      doc.setFillColor(57, 73, 171);
+      doc.rect(margin, y, pageW - margin * 2, 7, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.text('CREW DETAILS', pageW / 2, y + 5, { align: 'center' });
+      y += 10;
+
+      doc.setTextColor(26, 35, 126);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      const cols = [
+        ['Date', td.crewDate],
+        ['Crew Name', td.crewName],
+        ['HQ', td.hq],
+        ['Designation', td.designation],
+        ['Group CLI', td.groupCli],
+        ['CMS ID', td.cmsId],
+      ];
+      const colW = (pageW - margin * 2) / 3;
+      cols.forEach(([label, val], idx) => {
+        const cx = margin + (idx % 3) * colW;
+        const cy = y + Math.floor(idx / 3) * 10;
+        doc.setFont('helvetica', 'bold');
+        doc.text(label + ':', cx, cy);
+        doc.setFont('helvetica', 'normal');
+        doc.text((val || '').toString().toUpperCase(), cx + 32, cy);
+      });
+      y += Math.ceil(cols.length / 3) * 10 + 4;
+
+      // ── LR Table ──
+      doc.setFillColor(57, 73, 171);
+      doc.rect(margin, y, pageW - margin * 2, 7, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.text('LR DETAILS', pageW / 2, y + 5, { align: 'center' });
+      y += 9;
+
+      const tableHead = [['#', 'Working LP Name & HQ', 'Train No', 'Loco No', 'From Stn.', 'Dep.', 'To Stn.', 'Arrival', 'Line']];
+      const tableBody = entries.map(e => [
+        e.entryNo, e.lpNameHq, e.trainNo, e.locoNo, e.fromStation, e.depTime,
+        e.toStation, e.arrTime, e.line
+      ]);
+
+      doc.autoTable({
+        startY: y,
+        head: tableHead,
+        body: tableBody,
+        margin: { left: margin, right: margin },
+        styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak', textColor: [26, 35, 126] },
+        headStyles: { fillColor: [26, 35, 126], textColor: [255, 215, 0], fontStyle: 'bold', halign: 'center' },
+        alternateRowStyles: { fillColor: [240, 248, 255] },
+        columnStyles: {
+          0: { cellWidth: 8,  halign: 'center' },
+          1: { cellWidth: 60 },
+          2: { cellWidth: 22 },
+          3: { cellWidth: 22 },
+          4: { cellWidth: 26 },
+          5: { cellWidth: 18 },
+          6: { cellWidth: 26 },
+          7: { cellWidth: 18 },
+          8: { cellWidth: 18 },
+        },
+      });
+
+      // ── Footer ──
+      const pages = doc.internal.getNumberOfPages();
+      for (let p = 1; p <= pages; p++) {
+        doc.setPage(p);
+        doc.setFontSize(7);
+        doc.setTextColor(120, 120, 120);
+        doc.text('South East Central Railway — Raipur Division | Crew LR Data Form', margin, doc.internal.pageSize.getHeight() - 5);
+        doc.text(`Page ${p} of ${pages}`, pageW - margin, doc.internal.pageSize.getHeight() - 5, { align: 'right' });
+      }
+
+      const crew = (td.crewName || 'report').replace(/\s+/g, '_').toLowerCase();
+      doc.save(`Crew_LR_Data_${crew}_${new Date().toISOString().slice(0,10)}.pdf`);
+      showToast('✅ PDF generated and downloaded!', 'success');
+    } catch (err) {
+      console.error(err);
+      showToast('❌ PDF generation failed. Check console.', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '⬇ Generate PDF';
+    }
+  }
+
+  function clearForm() {
+    if (!confirm('Clear the entire form? This cannot be undone.')) return;
+
+    // Reset crew detail fields
+    document.getElementById('crewDate').value = '';
+    document.getElementById('crewName').value = '';
+    document.getElementById('hq').value = '';
+    document.getElementById('designation').value = '';
+    document.getElementById('groupCli').value = '';
+    document.getElementById('cmsId').value = '';
+    ['hq', 'designation', 'cmsId'].forEach(id => {
+      const el = document.getElementById(id);
+      el.removeAttribute('readonly');
+      el.title = '';
+    });
+
+    // Remove all entry cards and add one fresh blank entry
+    document.getElementById('entriesWrap').innerHTML = '';
+    rowCount = 0;
+    addRow();
+
+    // Re-enable submit button
+    isSubmitted = false;
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = false;
+    btn.textContent = '✔ Submit to Google Sheet';
+    btn.style.background = '';
+    btn.title = '';
+
+    showToast('🗑️ Form cleared', 'info');
+  }
+
+  addRow();
+</script>
+
+<!--
+════════════════════════════════════════════════════════════════
+  GOOGLE APPS SCRIPT — PASTE INTO script.google.com
+════════════════════════════════════════════════════════════════
+
+1. Go to: https://script.google.com
+2. Create a New Project (or open your existing one)
+3. Paste the code below:
+
+─────────────────────────────────────────────────────────────
+
+var SUBMIT_SHEET_ID = '1gm93E4KHjMHu6479owINbpBx0fHGXjxzAdNrXZuVJu4'; // "LR DATA" sheet
+
+// ── Crew list source (used by doGet below) ──
+var CREW_LIST_SHEET_ID = '1EaTu-GupuM_nM4K1sHe2q2l_QVjdUjxHqgpXjiiu_ag';
+var CREW_LIST_TAB_NAME = 'Sheet1';
+
+function doPost(e) {
+  try {
+    var data    = JSON.parse(e.postData.contents);
+    var ss      = SpreadsheetApp.openById(SUBMIT_SHEET_ID);
+    var sheet   = ss.getSheets()[0];
+    var header  = data.header;
+    var entries = data.entries;
+
+    // Auto-create the header row (once) if the sheet is still empty
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow([
+        'Timestamp', 'Crew Date', 'Crew Name', 'HQ', 'Designation', 'Group CLI', 'CMS ID',
+        'Entry No', 'Working LP Name & HQ', 'Train No', 'Loco No',
+        'From Stn.', 'Dep.', 'To Stn.', 'Arrival', 'Line'
+      ]);
+      sheet.getRange(1, 1, 1, 16).setFontWeight('bold');
+    }
+
+    // Every entry on the form (Entry 1, Entry 2, Entry 3 …) is written as its own row,
+    // repeating the shared crew details in columns A-G so each row is self-contained.
+    entries.forEach(function(entry) {
+      sheet.appendRow([
+        header.timestamp,
+        header.crewDate,
+        header.crewName,
+        header.hq,
+        header.designation,
+        header.groupCli,
+        header.cmsId,
+        entry.entryNo,
+        entry.lpNameHq,
+        entry.trainNo,
+        entry.locoNo,
+        entry.fromStation,
+        entry.depTime,
+        entry.toStation,
+        entry.arrTime,
+        entry.line
+      ]);
+    });
+
+    return ContentService
+      .createTextOutput(JSON.stringify({status:'success'}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({status:'error', message: err.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// Serves the crew list as JSONP so the form's browser fetch is never blocked by CORS.
+// Called as: YOUR_EXEC_URL?action=crewlist&callback=someFunctionName
+function doGet(e) {
+  var callback = e && e.parameter && e.parameter.callback;
+  try {
+    if (e && e.parameter && e.parameter.action === 'crewlist') {
+      var ss     = SpreadsheetApp.openById(CREW_LIST_SHEET_ID);
+      var sheet  = ss.getSheetByName(CREW_LIST_TAB_NAME);
+      var values = sheet.getDataRange().getValues();
+      var headers = values[0].map(function(h) { return String(h).trim().toUpperCase(); });
+
+      var nameIdx = -1, hqIdx = -1, desigIdx = -1, cmsIdx = -1;
+      for (var i = 0; i < headers.length; i++) {
+        if (nameIdx  === -1 && headers[i].indexOf('NAME') !== -1) nameIdx = i;
+        if (hqIdx    === -1 && (headers[i] === 'HQ' || headers[i].indexOf('H.Q') !== -1 || headers[i].indexOf('HEAD') !== -1)) hqIdx = i;
+        if (desigIdx === -1 && headers[i].indexOf('DESIG') !== -1) desigIdx = i;
+        if (cmsIdx   === -1 && headers[i].indexOf('CMS') !== -1) cmsIdx = i;
+      }
+
+      var records = [];
+      for (var r = 1; r < values.length; r++) {
+        var row  = values[r];
+        var name = String(row[nameIdx] || '').trim().toUpperCase();
+        if (!name) continue;
+        records.push({
+          name: name,
+          hq: hqIdx >= 0 ? String(row[hqIdx] || '').trim() : '',
+          designation: desigIdx >= 0 ? String(row[desigIdx] || '').trim() : '',
+          cmsId: cmsIdx >= 0 ? String(row[cmsIdx] || '').trim() : ''
+        });
+      }
+
+      var json = JSON.stringify(records);
+      if (callback) {
+        return ContentService.createTextOutput(callback + '(' + json + ');')
+          .setMimeType(ContentService.MimeType.JAVASCRIPT);
+      }
+      return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
+    }
+    return ContentService.createTextOutput('Crew LR Data Form backend is running.');
+  } catch (err) {
+    var errJson = JSON.stringify({ error: err.toString() });
+    if (callback) {
+      return ContentService.createTextOutput(callback + '(' + errJson + ');')
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+    return ContentService.createTextOutput(errJson).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+─────────────────────────────────────────────────────────────
+
+4. Click Deploy → New Deployment → Web App
+   → Execute as: Me
+   → Who has access: Anyone
+   → Deploy, then copy the /exec URL into SHEET_URL above.
+
+5. For future edits (like adding doGet above to an EXISTING deployment):
+   Deploy → Manage Deployments → Edit (pencil icon)
+   → Version: "New Version" → Deploy (keep the same URL).
+   IMPORTANT: Apps Script only picks up code changes after you create a
+   "New Version" this way — just saving the script is not enough.
+
+SUBMIT SHEET COLUMN ORDER:
+A: Timestamp | B: Crew Date | C: Crew Name | D: HQ | E: Designation
+F: Group CLI | G: CMS ID | H: Entry No | I: Working LP Name & HQ
+J: Train No | K: Loco No | L: From Stn. | M: Dep. | N: To Stn.
+O: Arrival | P: Line
+
+CREW NAME AUTOCOMPLETE SOURCE:
+Sheet: https://docs.google.com/spreadsheets/d/1EaTu-GupuM_nM4K1sHe2q2l_QVjdUjxHqgpXjiiu_ag
+Tab name: "Sheet1"
+Required headers in row 1 (any order): NAME | HQ | DESIGNATION | CMS ID
+Loaded via the doGet function above (JSONP) through your Apps Script Web App —
+this is the primary, reliable method and does NOT depend on the sheet being
+publicly shared, since the script runs as your Google account (the owner).
+If SHEET_URL isn't configured yet, or the Apps Script call fails for any reason,
+the form falls back to a direct public CSV fetch + third-party CORS proxies
+(allorigins/corsproxy.io/codetabs) as a last resort — these require the sheet
+to be shared "Anyone with the link → Viewer" and are less reliable.
+════════════════════════════════════════════════════════════════
+-->
+</body>
+</html>
