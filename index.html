@@ -4,6 +4,8 @@
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -102,6 +104,21 @@
     #toast.error{background:#e74c3c;}
     #toast.info{background:#1a237e;}
     @keyframes fadeIn{from{opacity:0;bottom:15px;}to{opacity:1;bottom:30px;}}
+    .combo-suggest{
+      display:none;position:absolute;top:100%;left:0;right:0;z-index:500;
+      background:#fff;border:2px solid #4a90e2;border-top:none;border-radius:0 0 6px 6px;
+      max-height:220px;overflow-y:auto;box-shadow:0 8px 20px rgba(0,0,0,.18);
+    }
+    .combo-suggest.open{display:block;}
+    .combo-suggest .combo-item{
+      padding:8px 10px;font-size:12px;font-weight:bold;color:#1a237e;cursor:pointer;
+      text-transform:uppercase;border-bottom:1px solid #eef3fb;
+    }
+    .combo-suggest .combo-item:last-child{border-bottom:none;}
+    .combo-suggest .combo-item:hover,.combo-suggest .combo-item.active{background:#e3f0ff;}
+    .combo-suggest .combo-empty{padding:8px 10px;font-size:12px;color:#888;font-style:italic;}
+    input.combo-invalid{border-color:#e74c3c !important;box-shadow:0 0 8px rgba(231,76,60,.35) !important;}
+    .field-invalid{border-color:#e74c3c !important;box-shadow:0 0 8px rgba(231,76,60,.35) !important;background:#fff5f5 !important;}
     input[type="text"][readonly]{
       background:linear-gradient(135deg,#e8f5e9,#f1f8e9);
       color:#1a237e;
@@ -152,11 +169,13 @@
         </div>
         <div class="field-pair">
           <label>Crew Name</label>
-          <div style="display:flex;gap:6px;align-items:center;">
-            <input type="text" id="crewName" list="crewNameList" placeholder="Type to search or enter manually" autocomplete="off" style="flex:1;">
+          <div style="display:flex;gap:6px;align-items:center;position:relative;flex:1;">
+            <div class="combo-wrap" style="position:relative;flex:1;">
+              <input type="text" id="crewName" placeholder="Type to search and select from list" autocomplete="off" style="flex:1;width:100%;">
+              <div id="crewNameSuggest" class="combo-suggest"></div>
+            </div>
             <button type="button" class="btn btn-blue" onclick="loadCrewList()" title="Refresh crew list from Google Sheet" style="padding:5px 9px;white-space:nowrap;font-size:11px;height:34px;">&#x1F504;</button>
           </div>
-          <datalist id="crewNameList"></datalist>
         </div>
         <div class="field-pair">
           <label>HQ</label>
@@ -173,80 +192,81 @@
         </div>
         <div class="field-pair">
           <label>Group CLI</label>
-          <input type="text" id="groupCli" list="groupCliList" placeholder="Type to search or enter manually" autocomplete="off">
-          <datalist id="groupCliList">
-            <option value="A K REDDY/CLI/R">
-            <option value="A.R. TARAM/CLI/BIA">
-            <option value="ABDUL MOIN KHAN/CLI/BIA">
-            <option value="AKHILESH KUMAR/CLI/BIA">
-            <option value="AMIT KUMAR BANKURE/CLI/BYT">
-            <option value="ANANT PRAKASH SHRIVASTAVA/CLI/BIA">
-            <option value="ANIL KUMAR/CLI/BIA">
-            <option value="ANKIT RAM KANT/CLI/BIA">
-            <option value="ASHISH WANJARI/CLI/BYT">
-            <option value="AVON KUMAR SAHU/CLI/R">
-            <option value="B B KUSHWAHA/CLI/BIA">
-            <option value="B K HARMUKH/CLI/BIA">
-            <option value="B. K. SAHA/CLI/BIA">
-            <option value="B.K.SONI/CLI/BIA">
-            <option value="BHARAT SINGH ATBHAIYYA/CLI/R">
-            <option value="BHOLI CHAUDHARY/CLI/R">
-            <option value="BIKRAMJIT KANRAR/CLI/BIA">
-            <option value="BINOD KUMAR RAM/CLI/R">
-            <option value="DEEPANNITA PUNTAMBEKAR/CLI/BIA">
-            <option value="DILLI RAO/CLI/BYT">
-            <option value="G. C. BISWAS/CLI/R">
-            <option value="G. V. R. K. MADHU/CLI/BIA">
-            <option value="GIRDHARI LAL/CLI/R">
-            <option value="JAISHANKAR SHARMA/CLI/BIA">
-            <option value="JITENDRA KUMAR MISHRA/CLI/BYT">
-            <option value="K P HIRWANI/CLI/BYT">
-            <option value="K P LAHRE/CLI/BIA">
-            <option value="K. K. SAHU/CLI/BIA">
-            <option value="KAMLESH KUMAR RAJABHOJ/CLI/BIA">
-            <option value="KHUSHAL SINGH/CLI/DRZ">
-            <option value="MAHESHWAR/CLI/BIA">
-            <option value="MANOJ KUMAR SAO/CLI/BIA">
-            <option value="MANSUKH LAL CHANDRAKAR/CLI/R">
-            <option value="MOHIT KUMAR SWARNKAR/CLI/BIA">
-            <option value="N. R. KARPAL/CLI/BIA">
-            <option value="N.K. BHOI/CLI/R">
-            <option value="NIRMAL KUMAR/CLI/BYT">
-            <option value="NITIN KUKDE/CLI/BYT">
-            <option value="P.K. PATEL/CLI/BIA">
-            <option value="PALAK RAM ALENDRA/CLI/DRZ">
-            <option value="PANKAJ KUMAR SINGH/CLI/BIA">
-            <option value="PAWAN KUMAR SINGH/CLI/BIA">
-            <option value="PURAN LAL PATEL/CLI/BYT">
-            <option value="RAJENDRA KUMAR/CLI/BIA">
-               <option value="RAJENDRA SINGH/CLI/BIA"></option>
-            <option value="RAJESH KUMAR DESHMUKH/CLI/R">
-            <option value="RAJNEESH BENERJEE/CLI/BIA">
-            <option value="RAKESH KUMAR KOSTA/CLI/DRZ">
-            <option value="RANJEET SINGH/CLI/BYT">
-            <option value="S K GAUTAM/CLI/BIA">
-            <option value="S S HUSSAIN/CLI/BIA">
-            <option value="S. C. RAI/CLI/BIA">
-            <option value="S. K. SINGH/CLI/BIA">
-            <option value="S. L. SONI/CLI/R">
-            <option value="SANAT KUMAR SAHU/CLI/DRZ">
-            <option value="SANJAY KUMAR ROY/CLI/BIA">
-            <option value="SANJAY SINGH/CLI/DRZ">
-            <option value="SANJEEV KUMAR SHARMA/CLI/BIA">
-            <option value="SANTOSH KUAMAR PATKAR/CLI/BIA">
-            <option value="SATYENDRA KUMAR/CLI/DRZ">
-            <option value="SHAILENDRA SINGH/CLI/BIA">
-            <option value="SUNDEEP KUMAR SHARMA/CLI/BIA">
-            <option value="SUNIL KUMAR DEWANGAN/CLI/BIA">
-            <option value="SURENDRA KUMAR SONI/CLI/BYT">
-            <option value="V.K. BHAGAT/CLI/R">
-            <option value="VIJAY KUMAR ARYA/CLI/BIA">
-            <option value="VIKAS SHENDE/CLI/R">
-            <option value="VINAY KUMAR VINCHURE/CLI/BIA">
-            <option value="VINAY PANTAWANE/CLI/BIA">
-            <option value="Y. RAMU/CLI/BIA">
-            <option value="YOGESH KUMAR MIHAULIA/CLI/BIA">
-          </datalist>
+          <select id="groupCli" onchange="this.classList.remove('field-invalid')">
+            <option value="">-- Select Group CLI --</option>
+            <option value="A K REDDY/CLI/R">A K REDDY/CLI/R</option>
+            <option value="A.R. TARAM/CLI/BIA">A.R. TARAM/CLI/BIA</option>
+            <option value="ABDUL MOIN KHAN/CLI/BIA">ABDUL MOIN KHAN/CLI/BIA</option>
+            <option value="AKHILESH KUMAR/CLI/BIA">AKHILESH KUMAR/CLI/BIA</option>
+            <option value="AMIT KUMAR BANKURE/CLI/BYT">AMIT KUMAR BANKURE/CLI/BYT</option>
+            <option value="ANANT PRAKASH SHRIVASTAVA/CLI/BIA">ANANT PRAKASH SHRIVASTAVA/CLI/BIA</option>
+            <option value="ANIL KUMAR/CLI/BIA">ANIL KUMAR/CLI/BIA</option>
+            <option value="ANKIT RAM KANT/CLI/BIA">ANKIT RAM KANT/CLI/BIA</option>
+            <option value="ASHISH WANJARI/CLI/BYT">ASHISH WANJARI/CLI/BYT</option>
+            <option value="AVON KUMAR SAHU/CLI/R">AVON KUMAR SAHU/CLI/R</option>
+            <option value="B B KUSHWAHA/CLI/BIA">B B KUSHWAHA/CLI/BIA</option>
+            <option value="B K HARMUKH/CLI/BIA">B K HARMUKH/CLI/BIA</option>
+            <option value="B. K. SAHA/CLI/BIA">B. K. SAHA/CLI/BIA</option>
+            <option value="B.K.SONI/CLI/BIA">B.K.SONI/CLI/BIA</option>
+            <option value="BHARAT SINGH ATBHAIYYA/CLI/R">BHARAT SINGH ATBHAIYYA/CLI/R</option>
+            <option value="BHOLI CHAUDHARY/CLI/R">BHOLI CHAUDHARY/CLI/R</option>
+            <option value="BIKRAMJIT KANRAR/CLI/BIA">BIKRAMJIT KANRAR/CLI/BIA</option>
+            <option value="BINOD KUMAR RAM/CLI/R">BINOD KUMAR RAM/CLI/R</option>
+            <option value="DEEPANNITA PUNTAMBEKAR/CLI/BIA">DEEPANNITA PUNTAMBEKAR/CLI/BIA</option>
+            <option value="DILLI RAO/CLI/BYT">DILLI RAO/CLI/BYT</option>
+            <option value="G. C. BISWAS/CLI/R">G. C. BISWAS/CLI/R</option>
+            <option value="G. V. R. K. MADHU/CLI/BIA">G. V. R. K. MADHU/CLI/BIA</option>
+            <option value="GIRDHARI LAL/CLI/R">GIRDHARI LAL/CLI/R</option>
+            <option value="JAISHANKAR SHARMA/CLI/BIA">JAISHANKAR SHARMA/CLI/BIA</option>
+            <option value="JITENDRA KUMAR MISHRA/CLI/BYT">JITENDRA KUMAR MISHRA/CLI/BYT</option>
+            <option value="K P HIRWANI/CLI/BYT">K P HIRWANI/CLI/BYT</option>
+            <option value="K P LAHRE/CLI/BIA">K P LAHRE/CLI/BIA</option>
+            <option value="K. K. SAHU/CLI/BIA">K. K. SAHU/CLI/BIA</option>
+            <option value="KAMLESH KUMAR RAJABHOJ/CLI/BIA">KAMLESH KUMAR RAJABHOJ/CLI/BIA</option>
+            <option value="KHUSHAL SINGH/CLI/DRZ">KHUSHAL SINGH/CLI/DRZ</option>
+            <option value="MAHESHWAR/CLI/BIA">MAHESHWAR/CLI/BIA</option>
+            <option value="MANOJ KUMAR SAO/CLI/BIA">MANOJ KUMAR SAO/CLI/BIA</option>
+            <option value="MANSUKH LAL CHANDRAKAR/CLI/R">MANSUKH LAL CHANDRAKAR/CLI/R</option>
+            <option value="MOHIT KUMAR SWARNKAR/CLI/BIA">MOHIT KUMAR SWARNKAR/CLI/BIA</option>
+            <option value="N. R. KARPAL/CLI/BIA">N. R. KARPAL/CLI/BIA</option>
+            <option value="N.K. BHOI/CLI/R">N.K. BHOI/CLI/R</option>
+            <option value="NIRMAL KUMAR/CLI/BYT">NIRMAL KUMAR/CLI/BYT</option>
+            <option value="NITIN KUKDE/CLI/BYT">NITIN KUKDE/CLI/BYT</option>
+            <option value="P.K. PATEL/CLI/BIA">P.K. PATEL/CLI/BIA</option>
+            <option value="PALAK RAM ALENDRA/CLI/DRZ">PALAK RAM ALENDRA/CLI/DRZ</option>
+            <option value="PANKAJ KUMAR SINGH/CLI/BIA">PANKAJ KUMAR SINGH/CLI/BIA</option>
+            <option value="PAWAN KUMAR SINGH/CLI/BIA">PAWAN KUMAR SINGH/CLI/BIA</option>
+            <option value="PURAN LAL PATEL/CLI/BYT">PURAN LAL PATEL/CLI/BYT</option>
+            <option value="RAJENDRA KUMAR/CLI/BIA">RAJENDRA KUMAR/CLI/BIA</option>
+            <option value="RAJENDRA SINGH/CLI/BIA">RAJENDRA SINGH/CLI/BIA</option>
+            <option value="RAJESH KUMAR DESHMUKH/CLI/R">RAJESH KUMAR DESHMUKH/CLI/R</option>
+            <option value="RAJNEESH BENERJEE/CLI/BIA">RAJNEESH BENERJEE/CLI/BIA</option>
+            <option value="RAKESH KUMAR KOSTA/CLI/DRZ">RAKESH KUMAR KOSTA/CLI/DRZ</option>
+            <option value="RANJEET SINGH/CLI/BYT">RANJEET SINGH/CLI/BYT</option>
+            <option value="S K GAUTAM/CLI/BIA">S K GAUTAM/CLI/BIA</option>
+            <option value="S S HUSSAIN/CLI/BIA">S S HUSSAIN/CLI/BIA</option>
+            <option value="S. C. RAI/CLI/BIA">S. C. RAI/CLI/BIA</option>
+            <option value="S. K. SINGH/CLI/BIA">S. K. SINGH/CLI/BIA</option>
+            <option value="S. L. SONI/CLI/R">S. L. SONI/CLI/R</option>
+            <option value="SANAT KUMAR SAHU/CLI/DRZ">SANAT KUMAR SAHU/CLI/DRZ</option>
+            <option value="SANJAY KUMAR ROY/CLI/BIA">SANJAY KUMAR ROY/CLI/BIA</option>
+            <option value="SANJAY SINGH/CLI/DRZ">SANJAY SINGH/CLI/DRZ</option>
+            <option value="SANJEEV KUMAR SHARMA/CLI/BIA">SANJEEV KUMAR SHARMA/CLI/BIA</option>
+            <option value="SANTOSH KUAMAR PATKAR/CLI/BIA">SANTOSH KUAMAR PATKAR/CLI/BIA</option>
+            <option value="SATYENDRA KUMAR/CLI/DRZ">SATYENDRA KUMAR/CLI/DRZ</option>
+            <option value="SHAILENDRA SINGH/CLI/BIA">SHAILENDRA SINGH/CLI/BIA</option>
+            <option value="SUNDEEP KUMAR SHARMA/CLI/BIA">SUNDEEP KUMAR SHARMA/CLI/BIA</option>
+            <option value="SUNIL KUMAR DEWANGAN/CLI/BIA">SUNIL KUMAR DEWANGAN/CLI/BIA</option>
+            <option value="SURENDRA KUMAR SONI/CLI/BYT">SURENDRA KUMAR SONI/CLI/BYT</option>
+            <option value="V.K. BHAGAT/CLI/R">V.K. BHAGAT/CLI/R</option>
+            <option value="VIJAY KUMAR ARYA/CLI/BIA">VIJAY KUMAR ARYA/CLI/BIA</option>
+            <option value="VIKAS SHENDE/CLI/R">VIKAS SHENDE/CLI/R</option>
+            <option value="VINAY KUMAR VINCHURE/CLI/BIA">VINAY KUMAR VINCHURE/CLI/BIA</option>
+            <option value="VINAY PANTAWANE/CLI/BIA">VINAY PANTAWANE/CLI/BIA</option>
+            <option value="Y. RAMU/CLI/BIA">Y. RAMU/CLI/BIA</option>
+            <option value="YOGESH KUMAR MIHAULIA/CLI/BIA">YOGESH KUMAR MIHAULIA/CLI/BIA</option>
+            <option value="Other">Other</option>
+          </select>
         </div>
       </div>
     </div>
@@ -331,8 +351,6 @@
 
     crewData = {};
     crewByCmsId = {};
-    const dl = document.getElementById('crewNameList');
-    dl.innerHTML = '';
     const cmsDl = document.getElementById('cmsIdList');
     cmsDl.innerHTML = '';
 
@@ -352,9 +370,6 @@
 
     temp.forEach(c => {
       crewData[c.name] = { hq: c.hq, designation: c.designation, cmsId: c.cmsId };
-      const opt = document.createElement('option');
-      opt.value = c.name;
-      dl.appendChild(opt);
 
       if (c.cmsId) {
         crewByCmsId[c.cmsId.toUpperCase()] = { name: c.name, hq: c.hq, designation: c.designation };
@@ -372,8 +387,6 @@
 
     crewData = {};
     crewByCmsId = {};
-    const dl = document.getElementById('crewNameList');
-    dl.innerHTML = '';
     const cmsDl = document.getElementById('cmsIdList');
     cmsDl.innerHTML = '';
 
@@ -390,9 +403,6 @@
 
     temp.forEach(c => {
       crewData[c.name] = { hq: c.hq, designation: c.designation, cmsId: c.cmsId };
-      const opt = document.createElement('option');
-      opt.value = c.name;
-      dl.appendChild(opt);
 
       if (c.cmsId) {
         crewByCmsId[c.cmsId.toUpperCase()] = { name: c.name, hq: c.hq, designation: c.designation };
@@ -512,10 +522,128 @@
       });
       showToast('✅ Auto-filled: ' + name, 'success');
     } else {
-      // Manually typed name — unlock fields for manual entry
       [hqEl, desigEl, cmsEl].forEach(el => { el.removeAttribute('readonly'); el.title = ''; });
     }
   }
+
+  // ===== Crew Name: SELECT-ONLY combobox (no manual/free-text entry allowed) =====
+  (function setupCrewNameCombo() {
+    const inputEl   = document.getElementById('crewName');
+    const suggestEl = document.getElementById('crewNameSuggest');
+    let activeIndex = -1;
+    let currentMatches = [];
+    let selectedValid = false; // true only when value came from a real selection
+
+    function closeSuggest() {
+      suggestEl.classList.remove('open');
+      suggestEl.innerHTML = '';
+      activeIndex = -1;
+      currentMatches = [];
+    }
+
+    function renderSuggest(matches) {
+      currentMatches = matches;
+      activeIndex = -1;
+      if (matches.length === 0) {
+        suggestEl.innerHTML = '<div class="combo-empty">No matching crew name found</div>';
+      } else {
+        suggestEl.innerHTML = matches.map((name, i) =>
+          `<div class="combo-item" data-idx="${i}">${name}</div>`
+        ).join('');
+      }
+      suggestEl.classList.add('open');
+    }
+
+    function selectName(name) {
+      inputEl.value = name;
+      selectedValid = true;
+      inputEl.classList.remove('combo-invalid');
+      closeSuggest();
+      autoFillCrew(name);
+    }
+
+    function rejectInvalidEntry() {
+      // Value doesn't match any real crew record — force select-only, clear it.
+      if (inputEl.value.trim() !== '') {
+        showToast('⚠️ Please select a crew name from the list (manual entry not allowed)', 'error');
+      }
+      inputEl.value = '';
+      selectedValid = false;
+      const hqEl = document.getElementById('hq'), desigEl = document.getElementById('designation'), cmsEl = document.getElementById('cmsId');
+      [hqEl, desigEl, cmsEl].forEach(el => { el.value = ''; el.removeAttribute('readonly'); el.title = ''; });
+      closeSuggest();
+    }
+
+    inputEl.addEventListener('input', () => {
+      selectedValid = false;
+      inputEl.classList.remove('combo-invalid');
+      const q = inputEl.value.trim().toUpperCase();
+      if (!q) { closeSuggest(); return; }
+      const allNames = Object.keys(crewData);
+      const matches = allNames.filter(n => n.includes(q)).slice(0, 50);
+      renderSuggest(matches);
+    });
+
+    inputEl.addEventListener('focus', () => {
+      if (inputEl.value.trim() === '') {
+        const allNames = Object.keys(crewData).slice(0, 50);
+        if (allNames.length) renderSuggest(allNames);
+      }
+    });
+
+    inputEl.addEventListener('keydown', (e) => {
+      if (!suggestEl.classList.contains('open')) return;
+      const items = suggestEl.querySelectorAll('.combo-item');
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        activeIndex = Math.min(activeIndex + 1, items.length - 1);
+        items.forEach((it, i) => it.classList.toggle('active', i === activeIndex));
+        if (items[activeIndex]) items[activeIndex].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        activeIndex = Math.max(activeIndex - 1, 0);
+        items.forEach((it, i) => it.classList.toggle('active', i === activeIndex));
+        if (items[activeIndex]) items[activeIndex].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (activeIndex >= 0 && currentMatches[activeIndex]) {
+          selectName(currentMatches[activeIndex]);
+        } else if (currentMatches.length === 1) {
+          selectName(currentMatches[0]);
+        } else {
+          rejectInvalidEntry();
+        }
+      } else if (e.key === 'Escape') {
+        closeSuggest();
+      }
+    });
+
+    suggestEl.addEventListener('mousedown', (e) => {
+      const item = e.target.closest('.combo-item');
+      if (!item) return;
+      e.preventDefault();
+      const idx = parseInt(item.getAttribute('data-idx'), 10);
+      if (currentMatches[idx]) selectName(currentMatches[idx]);
+    });
+
+    inputEl.addEventListener('blur', () => {
+      // Delay so mousedown on a suggestion can register first
+      setTimeout(() => {
+        if (!selectedValid) {
+          const exact = crewData[inputEl.value.trim().toUpperCase()];
+          if (exact) {
+            selectName(inputEl.value.trim().toUpperCase());
+          } else {
+            rejectInvalidEntry();
+          }
+        }
+      }, 150);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!inputEl.contains(e.target) && !suggestEl.contains(e.target)) closeSuggest();
+    });
+  })();
 
   // Reverse lookup: typing/selecting a CMS ID fills Crew Name, HQ and Designation.
   function autoFillByCmsId(cmsId) {
@@ -539,12 +667,7 @@
     }
   }
 
-  // Listen on both 'input' (typing / most desktop browsers picking a datalist option)
-  // and 'change' (fires reliably on mobile browsers when a datalist suggestion is tapped)
-  // so Designation, HQ and CMS ID auto-fill no matter how the name or ID was selected.
-  const crewNameEl = document.getElementById('crewName');
-  crewNameEl.addEventListener('input',  (e) => autoFillCrew(e.target.value));
-  crewNameEl.addEventListener('change', (e) => autoFillCrew(e.target.value));
+  // Crew Name input/select-only behavior is fully handled by setupCrewNameCombo() above.
 
   const cmsIdEl = document.getElementById('cmsId');
   cmsIdEl.addEventListener('input',  (e) => autoFillByCmsId(e.target.value));
@@ -571,9 +694,9 @@
           <div class="entry-field"><label>Train No.</label><input type="text" name="trainNo"></div>
           <div class="entry-field"><label>Loco No.</label><input type="text" name="locoNo"></div>
           <div class="stn-row">
-            <div class="stn-field"><label>From Stn.</label><input type="text" name="fromStation" list="stnList" autocomplete="off"></div>
+            <div class="stn-field"><label>From Stn.</label><input type="text" name="fromStation" list="stnList" autocomplete="off" oninput="this.classList.remove('field-invalid')"></div>
             <div class="stn-field"><label>Dep.</label><input type="text" name="depTime"></div>
-            <div class="stn-field"><label>To Stn.</label><input type="text" name="toStation" list="stnList" autocomplete="off"></div>
+            <div class="stn-field"><label>To Stn.</label><input type="text" name="toStation" list="stnList" autocomplete="off" oninput="this.classList.remove('field-invalid')"></div>
             <div class="stn-field"><label>Arrival</label><input type="text" name="arrTime"></div>
             <div class="stn-field"><label>Line</label>
               <select name="line">
@@ -649,6 +772,54 @@
     return { header, entries };
   }
 
+  function clearInvalidMarks() {
+    document.getElementById('groupCli').classList.remove('field-invalid');
+    document.querySelectorAll('.entry-card [name="fromStation"], .entry-card [name="toStation"]')
+      .forEach(el => el.classList.remove('field-invalid'));
+  }
+
+  // Mandatory: Group CLI (header) + From Stn / To Stn for every entry row.
+  function validateMandatoryFields() {
+    clearInvalidMarks();
+    let firstInvalid = null;
+    const problems = [];
+
+    const groupCliEl = document.getElementById('groupCli');
+    if (!groupCliEl.value.trim()) {
+      groupCliEl.classList.add('field-invalid');
+      if (!firstInvalid) firstInvalid = groupCliEl;
+      problems.push('Group CLI');
+    }
+
+    const cards = document.querySelectorAll('.entry-card');
+    if (cards.length === 0) {
+      showToast('❌ Add at least one entry before submitting', 'error');
+      return false;
+    }
+
+    cards.forEach((card, i) => {
+      const fromEl = card.querySelector('[name="fromStation"]');
+      const toEl   = card.querySelector('[name="toStation"]');
+      if (!fromEl.value.trim()) {
+        fromEl.classList.add('field-invalid');
+        if (!firstInvalid) firstInvalid = fromEl;
+        problems.push(`Entry ${i + 1}: From Stn.`);
+      }
+      if (!toEl.value.trim()) {
+        toEl.classList.add('field-invalid');
+        if (!firstInvalid) firstInvalid = toEl;
+        problems.push(`Entry ${i + 1}: To Stn.`);
+      }
+    });
+
+    if (problems.length > 0) {
+      showToast('❌ Please fill mandatory field(s): ' + problems.join(', '), 'error');
+      if (firstInvalid) { firstInvalid.focus(); firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      return false;
+    }
+    return true;
+  }
+
   let isSubmitted = false;
 
   async function handleSubmit() {
@@ -656,6 +827,8 @@
       alert('⚠️ DATA ALREADY SUBMITTED');
       return;
     }
+
+    if (!validateMandatoryFields()) return;
 
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
@@ -684,6 +857,8 @@
   }
 
   function generatePDF() {
+    if (!validateMandatoryFields()) return;
+
     const btn = document.getElementById('pdfBtn');
     btn.disabled = true;
     btn.textContent = '⏳ Generating...';
