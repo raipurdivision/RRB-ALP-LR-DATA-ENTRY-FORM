@@ -3,6 +3,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -205,7 +206,7 @@
             <option value="KAMLESH KUMAR RAJABHOJ/CLI/BIA">
             <option value="KHUSHAL SINGH/CLI/DRZ">
             <option value="MAHESHWAR/CLI/BIA">
-            <option value="MANOJ KUMAR  SAO/CLI/BIA">
+            <option value="MANOJ KUMAR SAO/CLI/BIA">
             <option value="MANSUKH LAL CHANDRAKAR/CLI/R">
             <option value="MOHIT KUMAR SWARNKAR/CLI/BIA">
             <option value="N. R. KARPAL/CLI/BIA">
@@ -253,6 +254,13 @@
     <!-- LR Details -->
     <div class="section">
       <div class="section-title">LR Details</div>
+      <datalist id="stnList">
+        <option value="BSP">
+        <option value="DGG">
+        <option value="H/CABIN">
+        <option value="G CABIN">
+        <option value="KRBA">
+      </datalist>
       <div id="entriesWrap"></div>
       <div class="btn-row" style="margin-top:14px;">
         <button class="btn btn-blue" onclick="addRow()">＋ Add Entry</button>
@@ -563,9 +571,9 @@
           <div class="entry-field"><label>Train No.</label><input type="text" name="trainNo"></div>
           <div class="entry-field"><label>Loco No.</label><input type="text" name="locoNo"></div>
           <div class="stn-row">
-            <div class="stn-field"><label>From Stn.</label><input type="text" name="fromStation"></div>
+            <div class="stn-field"><label>From Stn.</label><input type="text" name="fromStation" list="stnList" autocomplete="off"></div>
             <div class="stn-field"><label>Dep.</label><input type="text" name="depTime"></div>
-            <div class="stn-field"><label>To Stn.</label><input type="text" name="toStation"></div>
+            <div class="stn-field"><label>To Stn.</label><input type="text" name="toStation" list="stnList" autocomplete="off"></div>
             <div class="stn-field"><label>Arrival</label><input type="text" name="arrTime"></div>
             <div class="stn-field"><label>Line</label>
               <select name="line">
